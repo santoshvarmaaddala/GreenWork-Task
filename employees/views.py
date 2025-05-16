@@ -28,7 +28,9 @@ class AdminOnlyView(APIView):
         return Response({"message": "Welcome Admin!"})
 
 class HRProtectedView(APIView):
-    permission_classes = [IsAuthenticated, IsHR]
-
+    permission_classes = [IsAuthenticated]
     def get(self, request):
+        if request.user.role != 'hr':
+            return Response({"detail": "You do not have permission to access this resource."},
+                            status=status.HTTP_403_FORBIDDEN)
         return Response({"message": "Welcome HR!"})

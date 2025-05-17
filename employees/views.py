@@ -19,6 +19,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.contrib.auth.decorators import login_required
+from employees.models import Department
+from django.db.models import Count
+from django.http import JsonResponse
 
 # Optional: Custom token response to include role
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -119,3 +122,21 @@ def test_session(request):
     print("🔍 Session ID:", request.session.session_key)
     print("👤 User in session:", request.user)
     return Response({"session": request.session.session_key, "user": str(request.user)})
+
+class AnalyticsView(View):
+    def get(self, request):
+        return render(request, 'analytics.html')
+
+
+# API endpoint for Chart.js
+class DepartmentStatsView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Authentication required'}, status=401)
+
+        if request.user.role not in ['hr', 'admin']:
+            return JsonResponse({'error': 'You do not have permission to access this resource.'}, status=403)
+
+        departments = Department.objects.annotate(employee_count=Count('employees'))
+        data = [{'name': d.name, 'employee_count': d.employee_count} for d in departments]
+        return JsonResponse(data, safe=False)

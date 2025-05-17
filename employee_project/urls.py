@@ -8,6 +8,8 @@ from employees.views import (
     SignupView,
     home_view
 )
+from employees.views import DepartmentStatsView
+from employees.views import AnalyticsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +27,8 @@ urlpatterns = [
     # Swagger UI
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
+    #Analytics
+    path('analytics/', AnalyticsView.as_view(), name='analytics'),
+    path('analytics/dept-stats/', DepartmentStatsView.as_view(), name='department-stats'),
 ]

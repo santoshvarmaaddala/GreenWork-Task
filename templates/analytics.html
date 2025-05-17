@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
+</head>
+<body>
+    <h2>Employees by Department</h2>
+    <canvas id="deptChart" width="600" height="400"></canvas>
+
+    <script>
+        fetch('/api/department-stats/')
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(item => item.name);
+                const counts = data.map(item => item.employee_count);
+
+                new Chart(document.getElementById('deptChart'), {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'No. of Employees',
+                            data: counts,
+                            backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF']
+                        }]
+                    }
+                });
+            });
+    </script>
+</body>
+</html>

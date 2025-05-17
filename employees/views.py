@@ -8,6 +8,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .serializers import LoginSerializer
 from rest_framework.permissions import IsAuthenticated
 from employees.permissions import IsAdmin, IsHR
+from rest_framework import viewsets
+from .serializers import EmployeeSerializer, DepartmentSerializer
+from .models import Employee, Department
 
 # Optional: Custom token response to include role
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -34,3 +37,12 @@ class HRProtectedView(APIView):
             return Response({"detail": "You do not have permission to access this resource."},
                             status=status.HTTP_403_FORBIDDEN)
         return Response({"message": "Welcome HR!"})
+    
+class DepartmentViewSet(viewsets.ModelViewSet):
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer
+
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer

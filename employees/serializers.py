@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Employee
+from .models import Employee, Department
 from django.contrib.auth import authenticate
 
 class LoginSerializer(serializers.Serializer):
@@ -19,3 +19,16 @@ class LoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+    
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = '__all__'
+
+
+class EmployeeSerializer(serializers.ModelSerializer):
+    department = DepartmentSerializer(read_only=True)
+
+    class Meta:
+        model = Employee
+        fields = ['id', 'name', 'email', 'role', 'department', 'date_of_joining']

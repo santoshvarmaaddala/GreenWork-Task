@@ -55,14 +55,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
+
+CACHE_MIDDLEWARE_SECONDS = 0
+CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
 ROOT_URLCONF = 'employee_project.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -175,3 +180,5 @@ SPECTACULAR_SETTINGS = {
 }
 
 AUTH_USER_MODEL = 'employees.Employee'
+
+LOGOUT_REDIRECT_URL = '/login/'

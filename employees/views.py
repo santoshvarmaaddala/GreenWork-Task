@@ -20,8 +20,11 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from employees.models import Department
-from django.db.models import Count
+from attendance.models import Attendance
+from django.db.models import Count, Q
 from django.http import JsonResponse
+from datetime import datetime
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Optional: Custom token response to include role
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -123,20 +126,60 @@ def test_session(request):
     print("👤 User in session:", request.user)
     return Response({"session": request.session.session_key, "user": str(request.user)})
 
-class AnalyticsView(View):
-    def get(self, request):
-        return render(request, 'analytics.html')
 
-
-# API endpoint for Chart.js
+@method_decorator(login_required(login_url='/login/'), name='dispatch')
 class DepartmentStatsView(View):
     def get(self, request):
-        if not request.user.is_authenticated:
-            return JsonResponse({'error': 'Authentication required'}, status=401)
-
         if request.user.role not in ['hr', 'admin']:
-            return JsonResponse({'error': 'You do not have permission to access this resource.'}, status=403)
+            return JsonResponse({'error': 'Permission denied'}, status=403)
 
         departments = Department.objects.annotate(employee_count=Count('employees'))
         data = [{'name': d.name, 'employee_count': d.employee_count} for d in departments]
         return JsonResponse(data, safe=False)
+    
+class DepartmentStats(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role not in ['hr', 'admin']:
+            return Response(
+                {"detail": "Permission denied"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        departments = Department.objects.annotate(employee_count=Count('employees'))
+        return Response([{'name': d.name, 'employee_count': d.employee_count} for d in departments])
+
+    
+@method_decorator(never_cache, name='dispatch')
+class AnalyticsView(LoginRequiredMixin, View):
+    login_url = '/login/'
+    
+    def get(self, request):
+        if request.user.role not in ['hr', 'admin']:
+            return redirect('home')
+
+        departments = Department.objects.annotate(employee_count=Count('employees'))
+        return render(request, 'analytics_hr_admin.html', {
+            'departments': departments,
+            'user': request.user
+        })
+        
+class MonthlyAttendanceStats(APIView):
+    def get(self, request):
+        stats = Attendance.objects.values('date__month').annotate(
+            present_count=Count('id', filter=Q(status='Present')),
+            absent_count=Count('id', filter=Q(status='Absent'))
+        ).order_by('date__month')[:6]
+
+        result = []
+        for stat in stats:
+            month_num = stat['date__month']
+            month_name = datetime(1900, month_num, 1).strftime('%B')
+            result.append({
+                'month': month_name,
+                'present_count': stat['present_count'],
+                'absent_count': stat['absent_count']
+            })
+
+        return Response(result)

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
+</head>
+<body>
+    <h2>Employees by Department</h2>
+    <canvas id="deptChart" width="600" height="200"></canvas>
+
+    <script>
+        fetch('/api/department-stats/')
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(d => d.name);
+                const counts = data.map(d => d.employee_count);
+
+                new Chart(document.getElementById('deptChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'No. of Employees',
+                            data: counts,
+                            backgroundColor: '#36A2EB'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            });
+    </script>
+</body>
+</html>

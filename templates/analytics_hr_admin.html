@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HR Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
+</head>
+<body>
+    <h2>Employees by Department</h2>
+    <canvas id="deptChart" width="600" height="200"></canvas>
+
+    <p><a href="{% url 'home' %}">Go Home</a></p>
+
+    <script>
+        const ctx = document.getElementById('deptChart').getContext('2d');
+
+        fetch('/analytics/data/')
+            .then(res => res.json())
+            .then(data => {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(d => d.name),
+                        datasets: [{
+                            label: '# of Employees',
+                            data: data.map(d => d.employee_count),
+                            backgroundColor: '#36A2EB'
+                        }]
+                    }
+                });
+            });
+    </script>
+</body>
+</html>

@@ -8,7 +8,6 @@ from employees.views import (
     SignupView,
     home_view,
     AnalyticsView,
-    DepartmentStatsView,
     DepartmentStats,
     MonthlyAttendanceStats
 )
@@ -22,13 +21,13 @@ urlpatterns = [
     path('signup/', SignupView.as_view(), name='signup'),
     path('home/', home_view, name='home'),
     path('analytics/', AnalyticsView.as_view(), name='analytics'),
-    path('analytics/dept-stats/', DepartmentStatsView.as_view(), name='department-stats'),
 
     # API Views (JWT required)
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/department-stats/', DepartmentStats.as_view(), name='department-stats-api'),
-    path('api/attendance-stats/', MonthlyAttendanceStats.as_view(), name='attendance-stats-api'),
+    path('analytics/dept-data/', DepartmentStats.as_view(), name='dept_data'),
+    path('analytics/attendance-data/', MonthlyAttendanceStats.as_view(), name='attendance_data'),
+   
     
     # Swagger UI
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

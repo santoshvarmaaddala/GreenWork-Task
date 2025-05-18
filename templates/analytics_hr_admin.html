@@ -8,23 +8,43 @@
     <h2>Employees by Department</h2>
     <canvas id="deptChart" width="600" height="200"></canvas>
 
-    <p><a href="{% url 'home' %}">Go Home</a></p>
+    <h2>Monthly Attendance</h2>
+    <canvas id="attendanceChart" width="600" height="200"></canvas>
+
+    <p><a href="{% url 'logout' %}">Logout</a></p>
 
     <script>
-        const ctx = document.getElementById('deptChart').getContext('2d');
-
-        fetch('/analytics/data/')
+        // Department chart
+        fetch('/analytics/dept-data/')
             .then(res => res.json())
             .then(data => {
-                new Chart(ctx, {
+                const labels = data.map(d => d.name);
+                const counts = data.map(d => d.employee_count);
+
+                new Chart(document.getElementById('deptChart'), {
                     type: 'bar',
+                    data: { labels, datasets: [{ label: '# of Employees', data: counts, backgroundColor: '#36A2EB' }] }
+                });
+            });
+
+        // Attendance chart
+        fetch('/analytics/attendance-data/')
+            .then(res => res.json())
+            .then(data => {
+                const months = data.map(d => d.month);
+                const present = data.map(d => d.present);
+                const absent = data.map(d => d.absent);
+                const late = data.map(d => d.late);
+
+                new Chart(document.getElementById('attendanceChart'), {
+                    type: 'line',
                     data: {
-                        labels: data.map(d => d.name),
-                        datasets: [{
-                            label: '# of Employees',
-                            data: data.map(d => d.employee_count),
-                            backgroundColor: '#36A2EB'
-                        }]
+                        labels: months,
+                        datasets: [
+                            { label: 'Present', data: present, borderColor: '#36A2EB', fill: false },
+                            { label: 'Absent', data: absent, borderColor: '#FF6384', fill: false },
+                            { label: 'Late', data: late, borderColor: '#FFCE56', fill: false }
+                        ]
                     }
                 });
             });

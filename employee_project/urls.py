@@ -9,7 +9,8 @@ from employees.views import (
     home_view,
     AnalyticsView,
     DepartmentStats,
-    MonthlyAttendanceStats
+    MonthlyAttendanceStats,
+    AttendanceReportView
 )
 
 urlpatterns = [
@@ -27,6 +28,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('analytics/dept-data/', DepartmentStats.as_view(), name='dept_data'),
     path('analytics/attendance-data/', MonthlyAttendanceStats.as_view(), name='attendance_data'),
+    path('attendance/report/', AttendanceReportView.as_view(), name='attendance_report'),
    
     
     # Swagger UI

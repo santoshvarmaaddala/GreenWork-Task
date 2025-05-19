@@ -6,6 +6,7 @@ from .views import (
     home_view,
     test_session,
 )
+from employees.views import AttendanceFormView
 
 app_name = 'employees'
 
@@ -14,5 +15,6 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('signup/', SignupView.as_view(), name='signup'),
     path('home/', home_view, name='home'),
+     path('attendance/', AttendanceFormView.as_view(), name='mark_attendance'),
     path('test-session/', test_session, name='test_session'),
 ]

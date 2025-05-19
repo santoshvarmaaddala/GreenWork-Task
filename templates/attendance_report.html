@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head><title>Daily Attendance</title></head>
+<body>
+    <h2>📅 Attendance Report – {{ today }}</h2>
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for att in attendances %}
+                <tr>
+                    <td>{{ att.employee.name }} ({{ att.employee.email }})</td>
+                    <td>{{ att.status }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="2">No records found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

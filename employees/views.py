@@ -23,7 +23,7 @@ from employees.models import Department
 from attendance.models import Attendance
 from django.db.models import Count, Q
 from django.http import JsonResponse
-from datetime import datetime
+from datetime import datetime, date
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Optional: Custom token response to include role
@@ -175,3 +175,15 @@ class MonthlyAttendanceStats(View):
             })
 
         return JsonResponse(result, safe=False)
+    
+class AttendanceReportView(LoginRequiredMixin, View):
+    def get(self, request):
+        if request.user.role not in ['hr', 'admin']:
+            return redirect('home')
+
+        today = date.today()
+        attendances = Attendance.objects.filter(date=today).select_related('employee')
+        return render(request, 'attendance_report.html', {
+            'attendances': attendances,
+            'today': today.isoformat()
+        })

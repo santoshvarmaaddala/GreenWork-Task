@@ -5,19 +5,18 @@ class Attendance(models.Model):
     STATUS_CHOICES = (
         ('Present', 'Present'),
         ('Absent', 'Absent'),
-        ('Late', 'Late'),
+        ('Late', 'Late')
     )
 
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='attendance_records')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
 
     class Meta:
-        unique_together = ('employee', 'date')  # One record per employee per day
+        unique_together = ('employee', 'date')
 
     def __str__(self):
-        return f"{self.employee.name} - {self.date}: {self.status}"
-
+        return f"{self.employee.email} - {self.date}: {self.status}"
 
 class Performance(models.Model):
     RATING_CHOICES = (

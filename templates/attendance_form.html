@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance</title>
+</head>
+<body>
+    <h2>Mark Attendance</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="date">Date:</label>
+        <input type="date" name="date" value="{{ today }}" required><br/><br/>
+
+        <table border="1" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in employees %}
+                    <tr>
+                        <td>{{ emp.name }} ({{ emp.email }})</td>
+                        <td>
+                            <select name="status_{{ emp.id }}">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Late">Late</option>
+                            </select>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+        <button type="submit">Save Attendance</button>
+    </form>
+
+    <p><a href="{% url 'analytics' %}">Back to Analytics</a></p>
+</body>
+</html>
